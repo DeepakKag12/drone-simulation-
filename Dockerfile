@@ -10,14 +10,14 @@ ENV PYTHONUNBUFFERED=1
 # ── Install dependencies ──
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-	--mount=type=cache,target=/var/lib/apt,sharing=locked \
-	apt-get update && apt-get install -y --no-install-recommends \
-		python3 python3-pip \
-		xvfb x11vnc websockify \
-		novnc fluxbox \
-		libgl1-mesa-glx libgl1-mesa-dri libglib2.0-0 \
-		x11-utils procps curl \
-	&& rm -rf /var/lib/apt/lists/*
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-pip \
+        xvfb x11vnc websockify novnc fluxbox \
+        libgl1-mesa-glx libgl1-mesa-dri libgles2-mesa \
+        mesa-utils mesa-vulkan-drivers \
+        libglib2.0-0 x11-utils procps curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Fix NoVNC index
 
