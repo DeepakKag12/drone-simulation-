@@ -41,7 +41,7 @@ fluxbox &
 echo "=== Starting x11vnc ==="
 x11vnc -display :0 -nopw -listen localhost -xkb -forever -shared &
 
-python3 - <<'EOF'
+python3 - <<EOF
 import socket
 import time
 
