@@ -42,7 +42,7 @@ echo "=== Starting window manager (fluxbox) ==="
 fluxbox &
 
 echo "=== Starting x11vnc ==="
-x11vnc -display :0 -nopw -listen localhost -xkb -forever -shared &
+x11vnc -display :0 -nopw -listen localhost -xkb -forever -shared -noxdamage -rfbport 5900 -rfbportv6 -1 &
 
 python3 - <<EOF
 import socket
@@ -68,7 +68,7 @@ echo "=== Starting websockify (NoVNC) on port ${PORT_VALUE} ==="
 kill $INIT_PID 2>/dev/null || true
 sleep 1
 
-websockify --web=/usr/share/novnc/ --wrap-mode=ignore 0.0.0.0:${PORT_VALUE} localhost:5900 &
+websockify --web=/usr/share/novnc/ --wrap-mode=ignore --heartbeat=30 --log-file=- 0.0.0.0:${PORT_VALUE} 127.0.0.1:5900 &
 
 python3 - <<'EOF'
 import os
@@ -100,9 +100,14 @@ for i in $(seq 1 30); do
 done
 
 echo "=== Starting PyBullet Simulation ==="
-while true; do
-    python3 /app/drone_swarm_pybullet.py || {
-        echo "Simulation exited with code $?. Restarting in 5 seconds..."
-        sleep 5
-    }
-done
+(
+    while true; do
+        python3 /app/drone_swarm_pybullet.py || {
+            echo "Simulation exited with code $?. Restarting in 5 seconds..."
+            sleep 5
+        }
+    done
+) &
+
+echo "=== NoVNC ready ==="
+wait
