@@ -43,11 +43,9 @@ COPY . .
 
 # 🔥 CRITICAL FIX (DO NOT REMOVE)
 
-RUN sed -i 's/\r$//' /app/start.sh
-
-# Make executable
-
-RUN chmod +x /app/start.sh
+RUN sed -i 's/\r$//' /app/start.sh \
+    && sed -i '1s/^\xEF\xBB\xBF//' /app/start.sh \
+    && chmod +x /app/start.sh
 
 # Permissions
 
