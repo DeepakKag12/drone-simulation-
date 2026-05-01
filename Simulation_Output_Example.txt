@@ -1,0 +1,264 @@
+# Simulated Drone Swarm Output with Shamir Authentication
+# Expected terminal output when running the simulation
+
+[SHARES] ==================================================
+[SHARES] Shamir Secret Sharing Shares Distributed
+[SHARES] ==================================================
+[SHARES] Total Drones (N): 5
+[SHARES] Threshold (K): 3
+[SHARES] Recipients: [1, 2, 3, 4, 5]
+[SHARES]   Drone 1: Share index=1
+[SHARES]   Drone 2: Share index=2
+[SHARES]   Drone 3: Share index=3
+[SHARES]   Drone 4: Share index=4
+[SHARES]   Drone 5: Share index=5
+[SHARES] ==================================================
+
+[Leader] Broadcasted new coordinates to CURRENT drones (formation recompute):
+    Drone 1: r_target=25.00, theta_target=0.00
+    Drone 2: r_target=25.00, theta_target=1.26
+    Drone 3: r_target=25.00, theta_target=2.51
+    Drone 4: r_target=25.00, theta_target=3.77
+    Drone 5: r_target=25.00, theta_target=5.02
+[Leader] Formation v1: N=5, r=25.00 (RECALIB CURRENT)
+
+[Election] ================================
+[Election] reason = initial, t = 0.0s
+[Election]  Drone 1: score=0.892, batt=100.0%, link=0.847, conf=0.98
+[Election]  Drone 2: score=0.856, batt=95.2%, link=0.823, conf=0.91
+[Election]  Drone 3: score=0.934, batt=98.7%, link=0.912, conf=0.95
+[Election]  Drone 4: score=0.821, batt=87.3%, link=0.834, conf=0.89
+[Election]  Drone 5: score=0.798, batt=82.1%, link=0.801, conf=0.87
+[Election] Initiators: [1, 2, 3, 4, 5]
+[Election] RESULT: New leader = Drone 3 (old leader=None)
+[Election] =================================
+
+[Controls]
+  KEYBOARD:
+  1: Secure Join + leader fails + base-triggered re-election
+  2: Secure Normal join (with Shamir authentication)
+  3: Leave + leader fails + re-election
+  4: Force periodic re-election (manual)
+  5: Immediate leader failure re-election
+  6: Normal leave (no failure)
+  (If no key pressed, swarm orbits as normal; auto periodic after 3 rounds.)
+
+  GUI TESTING BUTTONS:
+  🧪 'Test Fake Drone': Send malicious drone (should be REJECTED)
+  ✅ 'Test Real Drone': Send legitimate drone (should be ACCEPTED)
+  'Fake Type' slider: Choose fake drone attack type:
+    0 = Invalid signature
+    1 = Expired certificate
+    2 = Tampered certificate
+    3 = Old timestamp (replay attack)
+
+[Shamir Secret Sharing Authentication]
+  - Each existing drone holds one Shamir secret share
+  - Leader selects K=3 trusted drones to reconstruct master secret
+  - Challenge = H(secret || Drone_ID || nonce)
+  - Joining drone signs challenge to prove legitimacy
+  - Failed authentication → drone blacklisted
+  - Use GUI buttons to test authentication robustness!
+
+[Leader] Recalibration complete -> drones RESUME ORBIT.
+
+# ========== WHEN USER CLICKS "Test Real Drone" BUTTON ==========
+
+[GUI] ✅ REAL DRONE TEST BUTTON PRESSED
+
+🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯 LEGITIMATE TEST 🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯
+[REAL DRONE TEST] ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+[REAL DRONE TEST] TESTING LEGITIMATE DRONE ACCEPTANCE
+[REAL DRONE TEST] ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅
+[REAL DRONE TEST] 🤖 Testing legitimate drone 6 authentication...
+[REAL DRONE TEST] 🔐 Using proper credentials and valid certificate
+[REAL DRONE TEST] 📡 Current swarm size: 5
+[REAL DRONE TEST] 👑 Leader: Drone 3
+
+############################################################
+[SECURE JOIN] DRONE JOIN REQUEST RECEIVED
+############################################################
+[SECURE JOIN] Requesting Drone ID: 6
+[SECURE JOIN] Request Time: 15.50s
+[SECURE JOIN] Current Swarm Size: 5
+[SECURE JOIN] Max Swarm Capacity: 6
+############################################################
+[SECURE JOIN] ✓ All pre-checks passed
+[SECURE JOIN] Initiating Shamir Secret Sharing authentication...
+
+============================================================
+[AUTH] SHAMIR SECRET SHARING AUTHENTICATION
+============================================================
+[AUTH] Drone ID: 6
+[AUTH] Timestamp: 15.50s
+[AUTH] Current Swarm Members: [1, 2, 3, 4, 5]
+[AUTH] Leader ID: 3
+[AUTH] K-Threshold: 3
+------------------------------------------------------------
+[AUTH] STEP 0: Pre-validation checks...
+[AUTH]   ✓ Blacklist check passed
+[AUTH] STEP 1: Credential registration...
+[AUTH]   ✓ Credentials registered for drone 6
+[AUTH]   Public Key: a7b2c8f9d1e34f67...
+[AUTH]   Certificate Issuer: SWARM_CA
+[AUTH] STEP 2: Creating JOIN_REQUEST...
+[AUTH]   ✓ JOIN_REQUEST created
+[AUTH]   Nonce: f7c3a9b2e8d15c47...
+[AUTH]   Request Signature: 92e4f6a8b1c7d9e2...
+[AUTH] STEP 3: Preliminary validation...
+[AUTH]   ✓ Timestamp valid (drift: 0.02s)
+[AUTH]   ✓ Certificate valid
+[AUTH]     Valid from: 1738756250.638
+[AUTH]     Valid until: 1770292250.638
+[AUTH]   ✓ Request signature valid
+[AUTH] STEP 4: Shamir Secret Sharing reconstruction...
+[AUTH]   Selected trusted drones: [3, 1, 2]
+[AUTH]   Number of shares to use: 3
+[AUTH]   Collecting shares from selected drones...
+[AUTH]     Drone 3: Share (x=3, y=45821736498172634...)
+[AUTH]     Drone 1: Share (x=1, y=15273948517294857...)
+[AUTH]     Drone 2: Share (x=2, y=30547897034589714...)
+[AUTH]   ✓ Master secret reconstructed successfully
+[AUTH]   ✓ Secret integrity verified
+[AUTH] STEP 5: Challenge generation...
+[AUTH]   Challenge = H(secret || 6 || nonce)
+[AUTH]   Challenge hash: 8a3b4f2c9d1e7g8h9i2j3k4l5m6n...
+[AUTH]   ✓ Challenge issued to drone 6
+[AUTH] STEP 6: Challenge-response verification...
+[AUTH]   Drone 6 signing challenge with private key...
+[AUTH]   Response signature: c4e8f1a9b7d2e5f8c1a6b3d9e7f2...
+[AUTH]   ✓ Challenge response verified successfully
+
+------------------------------------------------------------
+[AUTH] ╔══════════════════════════════════════════════════════╗
+[AUTH] ║          AUTHENTICATION SUCCESSFUL                   ║
+[AUTH] ╠══════════════════════════════════════════════════════╣
+[AUTH] ║  Drone ID: 6                                         ║
+[AUTH] ║  Status: APPROVED                                    ║
+[AUTH] ║  Authentication Method: Shamir Secret Sharing        ║
+[AUTH] ║  K-Threshold: 3                                      ║
+[AUTH] ║  Authenticating Leader: Drone 3                      ║
+[AUTH] ║  Current Swarm Size: 5                               ║
+[AUTH] ║  Action: Drone CLEARED to join swarm                 ║
+[AUTH] ╚══════════════════════════════════════════════════════╝
+============================================================
+
+[SECURE JOIN] ╔══════════════════════════════════════════════╗
+[SECURE JOIN] ║  JOIN REQUEST: APPROVED                      ║
+[SECURE JOIN] ║  Authentication: PASSED                      ║
+[SECURE JOIN] ║  Action: Proceeding to slot reservation      ║
+[SECURE JOIN] ╚══════════════════════════════════════════════╝
+[JOIN] Leader accepted join of drone 6 at t=15.5s. Future N=6, r_future=27.32. Drones WAIT for GO.
+[SECURE JOIN] ✓ Drone 6 successfully processed
+############################################################
+
+[REAL DRONE TEST] 🎉🎉🎉 SUCCESS! 🎉🎉🎉
+[REAL DRONE TEST] ✅ AUTHENTICATION SYSTEM WORKING PROPERLY
+[REAL DRONE TEST] 🤖 Real drone correctly ACCEPTED
+[REAL DRONE TEST] 📊 Drone 6 authenticated and joined swarm!
+[REAL DRONE TEST] 📈 New swarm size: 6
+[REAL DRONE TEST] 🔗 Shares redistributed to all members
+🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯🎯
+
+[GUI] ✅ Test PASSED - Authentication correctly accepted real drone
+
+[SHARES] ==================================================
+[SHARES] Shamir Secret Sharing Shares Distributed
+[SHARES] ==================================================
+[SHARES] Total Drones (N): 6
+[SHARES] Threshold (K): 3
+[SHARES] Recipients: [1, 2, 3, 4, 5, 6]
+[SHARES]   Drone 1: Share index=1
+[SHARES]   Drone 2: Share index=2
+[SHARES]   Drone 3: Share index=3
+[SHARES]   Drone 4: Share index=4
+[SHARES]   Drone 5: Share index=5
+[SHARES]   Drone 6: Share index=6
+[SHARES] ==================================================
+
+[JOIN] New drone 6 spawned at BASE, flying to RESERVED SLOT (r=27.3, theta=5.24).
+
+# ========== WHEN USER CLICKS "Test Fake Drone" BUTTON (with Fake Type = 0) ==========
+
+[GUI] 🧪 FAKE DRONE TEST BUTTON PRESSED
+[GUI] Testing fake drone type: invalid_signature
+
+🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️ SECURITY TEST 🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️
+[FAKE DRONE TEST] 🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪
+[FAKE DRONE TEST] TESTING MALICIOUS DRONE REJECTION
+[FAKE DRONE TEST] Attack Type: INVALID_SIGNATURE
+[FAKE DRONE TEST] 🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪
+[FAKE DRONE TEST] 🎭 Created fake drone 1000 with INVALID SIGNATURE
+[FAKE DRONE TEST] 📝 Attack: Signing wrong message to bypass auth
+[FAKE DRONE TEST] 🔍 Testing if authentication correctly rejects malicious drone...
+[FAKE DRONE TEST] ✅✅✅ SUCCESS! ✅✅✅
+[FAKE DRONE TEST] 🛡️ SECURITY SYSTEM WORKING PROPERLY
+[FAKE DRONE TEST] 🚫 Fake drone correctly REJECTED
+[FAKE DRONE TEST] 📋 Rejection reason: Invalid request signature
+[FAKE DRONE TEST] 🎯 Authentication prevented malicious access!
+🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️
+
+[GUI] ✅ Test PASSED - Authentication correctly rejected fake drone
+
+# ========== WHEN USER CLICKS "Test Fake Drone" with Fake Type = 1 (Expired Certificate) ==========
+
+[GUI] 🧪 FAKE DRONE TEST BUTTON PRESSED
+[GUI] Testing fake drone type: expired_cert
+
+🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️ SECURITY TEST 🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️
+[FAKE DRONE TEST] 🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪
+[FAKE DRONE TEST] TESTING MALICIOUS DRONE REJECTION
+[FAKE DRONE TEST] Attack Type: EXPIRED_CERT
+[FAKE DRONE TEST] 🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪
+[FAKE DRONE TEST] 📅 Created fake drone 1001 with EXPIRED CERTIFICATE
+[FAKE DRONE TEST] 📝 Attack: Using outdated credentials
+[FAKE DRONE TEST] 🔍 Testing if authentication correctly rejects malicious drone...
+[FAKE DRONE TEST] ✅✅✅ SUCCESS! ✅✅✅
+[FAKE DRONE TEST] 🛡️ SECURITY SYSTEM WORKING PROPERLY
+[FAKE DRONE TEST] 🚫 Fake drone correctly REJECTED
+[FAKE DRONE TEST] 📋 Rejection reason: Invalid certificate
+[FAKE DRONE TEST] 🎯 Authentication prevented malicious access!
+🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️🛡️
+
+[GUI] ✅ Test PASSED - Authentication correctly rejected fake drone
+
+# ========== Continuing normal simulation ==========
+
+[Periodic] Reference drone completed round #1
+[Periodic] Reference drone completed round #2
+[Periodic] Reference drone completed round #3
+
+[Election] ================================
+[Election] reason = periodic, t = 45.7s
+[Election]  Drone 1: score=0.834, batt=94.2%, link=0.821, conf=0.23
+[Election]  Drone 2: score=0.798, batt=89.8%, link=0.798, conf=0.18
+[Election]  Drone 3: score=0.887, batt=93.1%, link=0.901, conf=0.21
+[Election]  Drone 4: score=0.756, batt=81.7%, link=0.787, conf=0.19
+[Election]  Drone 5: score=0.721, batt=76.4%, link=0.742, conf=0.17
+[Election]  Drone 6: score=0.912, batt=100.0%, link=0.934, conf=0.25
+[Election] Initiators: [1, 2, 3, 4, 5, 6]
+[Election] RESULT: New leader = Drone 6 (old leader=3)
+[Election] =================================
+
+# ========== Keyboard Controls Still Work ==========
+
+[CASE 2] New drone 7 requests JOIN at t=62.3s.
+
+############################################################
+[SECURE JOIN] DRONE JOIN REQUEST RECEIVED
+############################################################
+[SECURE JOIN] Requesting Drone ID: 7
+[SECURE JOIN] Request Time: 62.30s
+[SECURE JOIN] Current Swarm Size: 6
+[SECURE JOIN] Max Swarm Capacity: 6
+############################################################
+
+[SECURE JOIN] PRE-CHECK FAILED: Cluster at maximum capacity
+[SECURE JOIN] ╔══════════════════════════════════════════════╗
+[SECURE JOIN] ║  JOIN REQUEST: DENIED                        ║
+[SECURE JOIN] ║  Reason: Swarm at max capacity (6 drones)    ║
+[SECURE JOIN] ║  Action: Request rejected                    ║
+[SECURE JOIN] ╚══════════════════════════════════════════════╝
+############################################################
+
+[CASE 2] Join request DENIED for drone 7 (authentication failed)

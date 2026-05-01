@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shamir Secret Sharing Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Shamir Secret Sharing Simulator</h1>
+            <p class="subtitle">Interactive visualization of cryptographic secret sharing</p>
+        </header>
+
+        <!-- Configuration Section -->
+        <section class="config-section">
+            <h2>Configuration</h2>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label for="secret-input">Secret Value:</label>
+                    <input type="number" id="secret-input" value="12345" min="1" max="999999">
+                </div>
+                <div class="config-item">
+                    <label for="k-input">K (Threshold):</label>
+                    <input type="number" id="k-input" value="3" min="2" max="8">
+                    <span class="help-text">Minimum shares needed</span>
+                </div>
+                <div class="config-item">
+                    <label for="n-input">N (Total Shares):</label>
+                    <input type="number" id="n-input" value="5" min="2" max="8">
+                    <span class="help-text">Total shares to create</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="action-section">
+            <button class="btn btn-primary" id="generate-btn">
+                Split Secret
+            </button>
+            <button class="btn btn-reconstruct" id="reconstruct-btn" style="display: none;">
+                Reconstruct Secret
+            </button>
+            <button class="btn btn-secondary" id="clear-btn">
+                Reset
+            </button>
+        </section>
+
+        <!-- Animation Canvas -->
+        <section class="canvas-section">
+            <div class="status-bar" id="status-bar">
+                <span id="status-text">Ready to split secret...</span>
+            </div>
+            <canvas id="animation-canvas"></canvas>
+            <div class="canvas-info" id="canvas-info">
+                Click on share balls to select/deselect them for reconstruction
+            </div>
+        </section>
+
+        <!-- Share Selection Panel -->
+        <section class="share-panel" id="share-panel" style="display: none;">
+            <h3>Generated Shares</h3>
+            <div id="share-list"></div>
+            <div class="selection-info" id="selection-info">
+                Need at least <span id="required-shares">3</span> shares for secure reconstruction<br>
+                <small>Using more shares is perfectly valid and secure. Using fewer will fail.</small>
+            </div>
+        </section>
+
+        <!-- Result Display -->
+        <section class="result-section" id="result-section" style="display: none;">
+            <div class="result-box">
+                <h3>Reconstruction Result</h3>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-label">Original Secret</div>
+                        <div class="result-value" id="original-value">12345</div>
+                    </div>
+                    <div class="result-arrow">→</div>
+                    <div class="result-item">
+                        <div class="result-label">Reconstructed</div>
+                        <div class="result-value" id="reconstructed-value">12345</div>
+                    </div>
+                    <div class="result-status" id="result-status">
+                        <span class="status-icon">✅</span>
+                        <span class="status-text">Success!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
