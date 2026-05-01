@@ -61,14 +61,14 @@ if not wait_for_port("127.0.0.1", 5900):
     raise SystemExit("x11vnc did not open port 5900 in time")
 EOF
 
-echo "=== Starting websockify (NoVNC) on port ${PORT_VALUE} ==="
+echo "=== Starting NoVNC proxy on port ${PORT_VALUE} ==="
 kill $INIT_PID 2>/dev/null || true
 sleep 1
 
-websockify --web=/usr/share/novnc/ --wrap-mode=ignore 0.0.0.0:${PORT_VALUE} localhost:5900 &
+ /usr/share/novnc/utils/novnc_proxy --listen ${PORT_VALUE} --vnc localhost:5900 --web /usr/share/novnc &
 
 for i in $(seq 1 30); do
-    if curl -s http://localhost:${PORT_VALUE}/ >/dev/null 2>&1; then
+    if curl -s http://localhost:${PORT_VALUE}/vnc.html >/dev/null 2>&1; then
         break
     fi
     sleep 1
