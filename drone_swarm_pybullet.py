@@ -9,6 +9,7 @@ import time
 import hashlib
 import secrets
 import threading
+import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import Dict, List, Tuple, Optional
 
@@ -21,10 +22,15 @@ class HealthHandler(BaseHTTPRequestHandler):
         pass  # suppress access logs
 
 def start_health_server():
-    server = HTTPServer(("0.0.0.0", 8080), HealthHandler)
+    server = HTTPServer(("0.0.0.0", 7860), HealthHandler)
     server.serve_forever()
 
-threading.Thread(target=start_health_server, daemon=True).start()
+def maybe_start_health_server():
+    if os.environ.get("START_HEALTH_SERVER") != "1":
+        return
+    threading.Thread(target=start_health_server, daemon=True).start()
+
+maybe_start_health_server()
 
 import pybullet as p
 import pybullet_data
