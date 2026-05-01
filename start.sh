@@ -6,6 +6,9 @@ echo "===== Application Startup ====="
 export START_HEALTH_SERVER=${START_HEALTH_SERVER:-0}
 PORT_VALUE=${PORT:-7860}
 
+mkdir -p /tmp/.X11-unix
+chmod 1777 /tmp/.X11-unix
+
 # Start a temporary HTTP server so the port is responsive while X starts
 python3 - <<'EOF' &
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -68,6 +71,7 @@ sleep 1
 websockify --web=/usr/share/novnc/ --wrap-mode=ignore 0.0.0.0:${PORT_VALUE} localhost:5900 &
 
 python3 - <<'EOF'
+import os
 import socket
 import time
 
@@ -83,7 +87,8 @@ def wait_for_port(host, port, timeout=15.0):
                 time.sleep(0.5)
     return False
 
-if not wait_for_port("127.0.0.1", int("${PORT_VALUE}")):
+port = int(os.environ.get("PORT", "7860"))
+if not wait_for_port("127.0.0.1", port):
     raise SystemExit("websockify did not open the port in time")
 EOF
 
