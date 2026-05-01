@@ -23,16 +23,16 @@
   <div id="screen"></div>
 
   <script type="module">
-    import RFB from '/core/rfb.js';
+    import RFB from './core/rfb.js';
 
     const statusEl = document.getElementById('status');
     const screen   = document.getElementById('screen');
 
     function buildURL() {
-      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-      const host  = location.hostname;
-      const port  = location.port || (location.protocol === 'https:' ? '443' : '80');
-      return `${proto}://${host}:${port}/websockify`;
+      const base = new URL('.', window.location.href);
+      const proto = base.protocol === 'https:' ? 'wss' : 'ws';
+      const host = base.host;
+      return `${proto}://${host}${base.pathname}websockify`;
     }
 
     function connect() {
