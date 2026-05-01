@@ -21,9 +21,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # Fix NoVNC index
 
-RUN if [ ! -f /usr/share/novnc/index.html ]; then \
-		ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html; \
-	fi
+COPY novnc_index.html /usr/share/novnc/index.html
 
 WORKDIR /app
 
