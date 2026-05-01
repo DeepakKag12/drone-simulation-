@@ -8,7 +8,6 @@ ENV RESOLUTION=1280x720x24
 ENV PYTHONUNBUFFERED=1
 
 # ── Install dependencies ──
-
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -19,37 +18,32 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         libglib2.0-0 x11-utils procps curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Fix NoVNC index
-
+# ── Fix NoVNC index ──
 COPY novnc_index.html /usr/share/novnc/index.html
 
 WORKDIR /app
 
-# Create user
-
+# ── Create non-root user ──
 RUN useradd -m -u 1000 user \
-	&& mkdir -p /tmp/.X11-unix \
-	&& chmod 1777 /tmp/.X11-unix
+    && mkdir -p /tmp/.X11-unix \
+    && chmod 1777 /tmp/.X11-unix
 
-# Install Python deps
-
+# ── Install Python deps ──
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip \
-	pip3 install -r requirements.txt
+    pip3 install -r requirements.txt
 
-# Copy all files
-
+# ── Copy app files ──
 COPY . .
 
-# 🔥 CRITICAL FIX (DO NOT REMOVE)
-
+# ── Fix Windows line endings (DO NOT REMOVE) ──
 RUN sed -i 's/\r$//' /app/start.sh \
     && sed -i '1s/^\xEF\xBB\xBF//' /app/start.sh \
     && chmod +x /app/start.sh
 
-# Permissions
-
+# ── Fix permissions ──
 RUN chown -R user:user /app
+
 USER user
 
 ENV PATH="/home/user/.local/bin:${PATH}"
