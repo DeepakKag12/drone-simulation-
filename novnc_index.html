@@ -6,74 +6,73 @@
   <title>Drone Swarm Simulation</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; background: #1a1a1a; overflow: hidden; }
+    html, body { width: 100%; height: 100%; background: #111; overflow: hidden; }
     #status {
-      position: absolute; top: 50%; left: 50%;
+      position: fixed;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      color: #aef; font-family: monospace; font-size: 18px;
-      text-align: center; z-index: 10; pointer-events: none;
+      color: #7cf;
+      font-family: monospace;
+      font-size: 20px;
+      text-align: center;
+      z-index: 99;
+      pointer-events: none;
     }
-    #screen {
-      width: 100%; height: 100%;
-    }
+    #screen { width: 100%; height: 100%; }
   </style>
 </head>
 <body>
   <div id="status">⏳ Connecting to simulation...</div>
   <div id="screen"></div>
-
   <script type="module">
-    import RFB from './core/rfb.js';
+    import RFB from '/core/rfb.js';
 
     const statusEl = document.getElementById('status');
     const screen   = document.getElementById('screen');
 
-    function buildURL() {
-      const base = new URL('.', window.location.href);
-      const proto = base.protocol === 'https:' ? 'wss' : 'ws';
-      const host = base.host;
-      return `${proto}://${host}${base.pathname}websockify`;
+    function wsURL() {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      const host  = location.hostname;
+      const port  = location.port || (location.protocol === 'https:' ? '443' : '80');
+      return proto + '://' + host + ':' + port + '/websockify';
     }
 
     function connect() {
       statusEl.style.display = 'block';
-      statusEl.textContent   = '⏳ Connecting to simulation...';
+      statusEl.textContent = '⏳ Connecting to simulation...';
 
       let rfb;
       try {
-        rfb = new RFB(screen, buildURL());
-      } catch (e) {
-        statusEl.textContent = '❌ Failed to create RFB: ' + e.message;
+        rfb = new RFB(screen, wsURL());
+      } catch(e) {
+        statusEl.textContent = '❌ RFB error: ' + e.message;
+        setTimeout(connect, 3000);
         return;
       }
 
-      rfb.scaleViewport  = true;
-      rfb.resizeSession  = false;
-      rfb.background     = '#1a1a1a';
+      rfb.scaleViewport = true;
+      rfb.resizeSession = false;
+      rfb.background    = '#111111';
 
       rfb.addEventListener('connect', () => {
         statusEl.style.display = 'none';
+        console.log('VNC connected');
       });
 
       rfb.addEventListener('disconnect', (e) => {
         statusEl.style.display = 'block';
-        const clean = e.detail && e.detail.clean;
-        if (clean) {
-          statusEl.textContent = '🔌 Disconnected. Reconnecting in 3s...';
-        } else {
-          statusEl.textContent = '⚠️ Connection lost. Reconnecting in 3s...';
-        }
+        statusEl.textContent = '🔄 Reconnecting...';
+        console.warn('VNC disconnected', e.detail);
         setTimeout(connect, 3000);
       });
 
       rfb.addEventListener('securityfailure', (e) => {
-        statusEl.style.display = 'block';
         statusEl.textContent = '🔒 Security error: ' + (e.detail.reason || 'unknown');
+        setTimeout(connect, 5000);
       });
     }
 
-    // Small delay to let websockify fully start before first connect attempt
-    setTimeout(connect, 500);
+    setTimeout(connect, 800);
   </script>
 </body>
 </html>
