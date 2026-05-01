@@ -65,7 +65,7 @@ echo "=== Starting NoVNC proxy on port ${PORT_VALUE} ==="
 kill $INIT_PID 2>/dev/null || true
 sleep 1
 
- /usr/share/novnc/utils/novnc_proxy --listen ${PORT_VALUE} --vnc localhost:5900 --web /usr/share/novnc &
+ /usr/share/novnc/utils/novnc_proxy --listen 0.0.0.0:${PORT_VALUE} --vnc localhost:5900 --web /usr/share/novnc &
 
 for i in $(seq 1 30); do
     if curl -s http://localhost:${PORT_VALUE}/vnc.html >/dev/null 2>&1; then
