@@ -61,11 +61,31 @@ if not wait_for_port("127.0.0.1", 5900):
     raise SystemExit("x11vnc did not open port 5900 in time")
 EOF
 
-echo "=== Starting NoVNC proxy on port ${PORT_VALUE} ==="
+echo "=== Starting websockify (NoVNC) on port ${PORT_VALUE} ==="
 kill $INIT_PID 2>/dev/null || true
 sleep 1
 
- /usr/share/novnc/utils/novnc_proxy --listen 0.0.0.0:${PORT_VALUE} --vnc localhost:5900 --web /usr/share/novnc &
+websockify --web=/usr/share/novnc/ --wrap-mode=ignore 0.0.0.0:${PORT_VALUE} localhost:5900 &
+
+python3 - <<'EOF'
+import socket
+import time
+
+def wait_for_port(host, port, timeout=15.0):
+    start = time.time()
+    while time.time() - start < timeout:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.settimeout(1.0)
+            try:
+                sock.connect((host, port))
+                return True
+            except OSError:
+                time.sleep(0.5)
+    return False
+
+if not wait_for_port("127.0.0.1", int("${PORT_VALUE}")):
+    raise SystemExit("websockify did not open the port in time")
+EOF
 
 for i in $(seq 1 30); do
     if curl -s http://localhost:${PORT_VALUE}/vnc.html >/dev/null 2>&1; then
