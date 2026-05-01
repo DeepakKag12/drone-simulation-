@@ -1,11 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0; url=/vnc.html?path=websockify&autoconnect=1&reconnect=1" />
-    <title>NoVNC</title>
-  </head>
-  <body>
-    Redirecting to NoVNC...
-  </body>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drone Swarm Simulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #1a1a1a; overflow: hidden; }
+    #status {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: #aef; font-family: monospace; font-size: 18px;
+      text-align: center; z-index: 10; pointer-events: none;
+    }
+    #screen {
+      width: 100%; height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">⏳ Connecting to simulation...</div>
+  <div id="screen"></div>
+
+  <script type="module">
+    import RFB from '/core/rfb.js';
+
+    const statusEl = document.getElementById('status');
+    const screen   = document.getElementById('screen');
+
+    function buildURL() {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      const host  = location.hostname;
+      const port  = location.port || (location.protocol === 'https:' ? '443' : '80');
+      return `${proto}://${host}:${port}/websockify`;
+    }
+
+    function connect() {
+      statusEl.style.display = 'block';
+      statusEl.textContent   = '⏳ Connecting to simulation...';
+
+      let rfb;
+      try {
+        rfb = new RFB(screen, buildURL());
+      } catch (e) {
+        statusEl.textContent = '❌ Failed to create RFB: ' + e.message;
+        return;
+      }
+
+      rfb.scaleViewport  = true;
+      rfb.resizeSession  = false;
+      rfb.background     = '#1a1a1a';
+
+      rfb.addEventListener('connect', () => {
+        statusEl.style.display = 'none';
+      });
+
+      rfb.addEventListener('disconnect', (e) => {
+        statusEl.style.display = 'block';
+        const clean = e.detail && e.detail.clean;
+        if (clean) {
+          statusEl.textContent = '🔌 Disconnected. Reconnecting in 3s...';
+        } else {
+          statusEl.textContent = '⚠️ Connection lost. Reconnecting in 3s...';
+        }
+        setTimeout(connect, 3000);
+      });
+
+      rfb.addEventListener('securityfailure', (e) => {
+        statusEl.style.display = 'block';
+        statusEl.textContent = '🔒 Security error: ' + (e.detail.reason || 'unknown');
+      });
+    }
+
+    // Small delay to let websockify fully start before first connect attempt
+    setTimeout(connect, 500);
+  </script>
+</body>
 </html>

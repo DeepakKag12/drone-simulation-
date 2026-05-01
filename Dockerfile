@@ -37,9 +37,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY . .
 
 # ── Fix Windows line endings (DO NOT REMOVE) ──
-RUN sed -i 's/\r$//' /app/start.sh \
-    && sed -i '1s/^\xEF\xBB\xBF//' /app/start.sh \
-    && chmod +x /app/start.sh
+RUN sed -i 's/\r$//' /app/start.sh
+
+# ── Make executable ──
+RUN chmod +x /app/start.sh
 
 # ── Fix permissions ──
 RUN chown -R user:user /app
