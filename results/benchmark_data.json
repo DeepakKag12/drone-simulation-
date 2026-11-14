@@ -1,0 +1,98 @@
+{
+  "timestamp": 1794686050.1948414,
+  "micro_benchmarks": {
+    "Ta_Bitwise_XOR_sec": 1.8272799999976996e-06,
+    "Tb_PRNG_sec": 1.2393999986670678e-07,
+    "Tc_Hash_sec": 5.404599998655613e-07,
+    "Td_HMAC_sec": 2.201299999978801e-06,
+    "Te_PUF_sec": 5.9197759999915434e-05,
+    "Tf_Concatenation_sec": 5.825999996886822e-08
+  },
+  "performance_vs_security_level": [
+    {
+      "security_level_pct": 25,
+      "threshold_t": 2,
+      "challenges_k": 8,
+      "avg_time_us": 656.75,
+      "min_time_us": 579.1,
+      "max_time_us": 1440.1
+    },
+    {
+      "security_level_pct": 50,
+      "threshold_t": 4,
+      "challenges_k": 8,
+      "avg_time_us": 856.96,
+      "min_time_us": 754.6,
+      "max_time_us": 1779.3
+    },
+    {
+      "security_level_pct": 75,
+      "threshold_t": 6,
+      "challenges_k": 8,
+      "avg_time_us": 927.44,
+      "min_time_us": 818.5,
+      "max_time_us": 2137.3
+    },
+    {
+      "security_level_pct": 100,
+      "threshold_t": 8,
+      "challenges_k": 8,
+      "avg_time_us": 701.19,
+      "min_time_us": 651.9,
+      "max_time_us": 1179.9
+    }
+  ],
+  "communication_and_storage_costs": {
+    "communication_cost_bits_k5": 4699,
+    "communication_cost_bits_k8": 6808,
+    "uav_storage_cost_bits": 352,
+    "paper_reported_comm_cost_bits": 1600,
+    "paper_reported_storage_cost_bits": 352,
+    "paper_reported_time_nodemcu_us": 450,
+    "paper_reported_time_rpi_us": 207
+  },
+  "success_rate_vs_noise": [
+    {
+      "noise_rate": 0.0,
+      "success_rate_pct": 100.0,
+      "trials": 50
+    },
+    {
+      "noise_rate": 0.01,
+      "success_rate_pct": 100.0,
+      "trials": 50
+    },
+    {
+      "noise_rate": 0.02,
+      "success_rate_pct": 100.0,
+      "trials": 50
+    },
+    {
+      "noise_rate": 0.03,
+      "success_rate_pct": 100.0,
+      "trials": 50
+    },
+    {
+      "noise_rate": 0.04,
+      "success_rate_pct": 100.0,
+      "trials": 50
+    },
+    {
+      "noise_rate": 0.05,
+      "success_rate_pct": 100.0,
+      "trials": 50
+    },
+    {
+      "noise_rate": 0.08,
+      "success_rate_pct": 92.0,
+      "trials": 50
+    },
+    {
+      "noise_rate": 0.1,
+      "success_rate_pct": 54.0,
+      "trials": 50
+    }
+  ],
+  "false_acceptance_rate_pct": 0.0,
+  "far_trials": 200
+}

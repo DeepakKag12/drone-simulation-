@@ -1,0 +1,27 @@
+{
+  "ideal": {
+    "name": "Nominal Laboratory",
+    "ber": 0.0,
+    "description": "Ideal room temperature (0% BER)"
+  },
+  "normal": {
+    "name": "Operational UAV Flight",
+    "ber": 0.02,
+    "description": "Normal flight dynamics (~2% BER)"
+  },
+  "hot": {
+    "name": "Thermal Degraded (65C)",
+    "ber": 0.05,
+    "description": "Thermal stress on silicon array (~5% BER)"
+  },
+  "aged": {
+    "name": "Aged / NBTI Degraded",
+    "ber": 0.1,
+    "description": "Long-term bias temperature instability (~10% BER)"
+  },
+  "extreme": {
+    "name": "Severe Environmental Stress",
+    "ber": 0.15,
+    "description": "Exceeds standard error margin (~15% BER)"
+  }
+}

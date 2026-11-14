@@ -1,0 +1,110 @@
+{
+  "fleet_size": 15,
+  "nodes": [
+    {
+      "uav_id": 101,
+      "puf_seed": "8a4fdc80c9869f5a5cadf075877c7e72ca5476dd892d50a7b3f43bacb7a17182",
+      "otp_identifier": "6b1d5c14c7c2e5a146de9e1fb3f8cc33",
+      "role": "QUORUM_PEER",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 102,
+      "puf_seed": "1f7468439406d85606cab280bcbb49d4c0f952846184e208a9f8ed1de4eda4c5",
+      "otp_identifier": "4542cc39fdc63bd5a6a7016c3ee51fe2",
+      "role": "QUORUM_PEER",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 103,
+      "puf_seed": "de00b91a511da0ef08253e38345eeb83a674d9030a1f6d916b4352a4939f1a23",
+      "otp_identifier": "32b63b238331b8df64224aaec24fd981",
+      "role": "QUORUM_PEER",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 104,
+      "puf_seed": "92c5394246b9f5350f9dcc302dbe4cd7b634ee5355f8660cbe253d63a3e2409f",
+      "otp_identifier": "e3530a6681d781ab442c3709b2921a2b",
+      "role": "QUORUM_PEER",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 105,
+      "puf_seed": "a3f83b47622b2b548b86c9a8773ddfdac49ec4fcadf0bb5b639c5ea1fbfd7d7c",
+      "otp_identifier": "fbcf4d272ca76bad87daa92f9d282a12",
+      "role": "QUORUM_PEER",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 106,
+      "puf_seed": "2abfe2f9c5c0c3b2512202619a7569113a13841620511066e1d137bc29b7d2e2",
+      "otp_identifier": "e7b2f5d8afc8511bdb3c410f7553503b",
+      "role": "QUORUM_PEER",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 107,
+      "puf_seed": "ef9e082dccbd3cf779daf5f90b6cf1ff73e6e2511305caa95cf564d021f3be62",
+      "otp_identifier": "263e7cbb2f3a8be22e15d478c7f71e97",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 108,
+      "puf_seed": "ecb7b18ab6c84f6c5d239bee2be6c0c46d60a5874fe3db0246431cb90f39c235",
+      "otp_identifier": "2bf8b9ee1ab76e27cd9989bb024758b6",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 109,
+      "puf_seed": "743b7dc699dc63abbb98f99187908e931462fc5bf3f84a1af0aa7ad401b349d9",
+      "otp_identifier": "b7d2ad8aa72d6c0026d3a539f1195cdd",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 110,
+      "puf_seed": "2343dab3a5a73edbb17fb47dc2bda67ee720bb446f9447832cc4d2ff67632036",
+      "otp_identifier": "f44f673873044b011d95feb27d2d044c",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 111,
+      "puf_seed": "076619f92f6601768d27548e53a6c3d0f823d85685c21ddb9989d2167b534069",
+      "otp_identifier": "405bf78ea8b273bb1ea55296de4fa554",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 112,
+      "puf_seed": "af8aaf3633f4519582de3141d98e1475e446b81ad38bcc656a91f79f47263a64",
+      "otp_identifier": "678ee7f27691456e6995b7abb00f2399",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 113,
+      "puf_seed": "a19ac4f7e1978ef4be558894020410e536ed6d41398eebf6ac066e6d8b7cc049",
+      "otp_identifier": "3afb2aab89addd1cbac8851ee2d544e8",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 114,
+      "puf_seed": "43355c585551244f6d7c6cca4d5ddad12a3dc8c8827d6b94466979401884fd00",
+      "otp_identifier": "bae2ad081a95aed652ea6224aacf46d2",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    },
+    {
+      "uav_id": 115,
+      "puf_seed": "7cba709db92fb15cfe5739fb3f1b7d685319a573e96c53e46b26918d60bfbefe",
+      "otp_identifier": "9daedf24443784bfa498f23ed5eaf72f",
+      "role": "ENROLLED_APPLICANT",
+      "enrolled_timestamp": "2026-11-15T00:00:00Z"
+    }
+  ]
+}

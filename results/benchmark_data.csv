@@ -1,0 +1,5 @@
+security_level_pct,threshold_t,challenges_k,avg_time_us,min_time_us,max_time_us
+25,2,8,656.75,579.1,1440.1
+50,4,8,856.96,754.6,1779.3
+75,6,8,927.44,818.5,2137.3
+100,8,8,701.19,651.9,1179.9

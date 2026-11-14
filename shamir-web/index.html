@@ -3,99 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shamir Secret Sharing Simulator</title>
+    <meta name="color-scheme" content="dark">
+    <title>UAV Swarm Admission Control & Hardware Telemetry</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Shamir Secret Sharing Simulator</h1>
-            <p class="subtitle">Interactive visualization of cryptographic secret sharing</p>
+    <div class="workbench">
+        <!-- Operational Navigation Bar -->
+        <header class="topbar">
+            <div class="topbar-identity">
+                <div class="radar-beacon">
+                    <span class="radar-dot"></span>
+                    <span class="radar-ring"></span>
+                </div>
+                <span class="group-tag">GROUP 24</span>
+                <span class="system-tag">SYS-CONTROL</span>
+                <div class="identity-text">
+                    <h1 class="system-title">SWARM ADMISSION CONTROL &amp; TELEMETRY</h1>
+                    <span class="system-desc">Decentralized Threshold Secret Sharing &amp; SRAM PUF Security Workbench</span>
+                </div>
+            </div>
+
+            <div class="topbar-status-strip">
+                <div class="status-cell">
+                    <span class="cell-k">TOPOLOGY</span>
+                    <select id="select-topology-mode" class="control-select">
+                        <option value="DECENTRALIZED_QUORUM" selected>DECENTRALIZED QUORUM (VSS)</option>
+                        <option value="BASE_STATION">BASE STATION CENTRALIZED</option>
+                    </select>
+                </div>
+                <div class="status-cell">
+                    <span class="cell-k">BASE STATION</span>
+                    <span class="cell-v v-standby" id="bs-status">STANDBY (QUORUM)</span>
+                </div>
+                <div class="status-cell">
+                    <span class="cell-k">FLEET</span>
+                    <span class="cell-v" id="swarm-count">5 ACTIVE</span>
+                </div>
+                <div class="status-cell">
+                    <span class="cell-k">QUORUM</span>
+                    <span class="cell-v v-mono" id="sec-level-badge">t=3 / k=6 (50%)</span>
+                </div>
+                <div class="status-cell">
+                    <span class="cell-k">QUARANTINED</span>
+                    <span class="cell-v v-alert" id="quarantine-count">0 THREATS</span>
+                </div>
+                <button class="btn btn-tiny" id="btn-toggle-audio" title="Toggle audio feedback">AUDIO: ON</button>
+            </div>
         </header>
 
-        <!-- Configuration Section -->
-        <section class="config-section">
-            <h2>Configuration</h2>
-            <div class="config-grid">
-                <div class="config-item">
-                    <label for="secret-input">Secret Value:</label>
-                    <input type="number" id="secret-input" value="12345" min="1" max="999999">
-                </div>
-                <div class="config-item">
-                    <label for="k-input">K (Threshold):</label>
-                    <input type="number" id="k-input" value="3" min="2" max="8">
-                    <span class="help-text">Minimum shares needed</span>
-                </div>
-                <div class="config-item">
-                    <label for="n-input">N (Total Shares):</label>
-                    <input type="number" id="n-input" value="5" min="2" max="8">
-                    <span class="help-text">Total shares to create</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Action Buttons -->
-        <section class="action-section">
-            <button class="btn btn-primary" id="generate-btn">
-                Split Secret
-            </button>
-            <button class="btn btn-reconstruct" id="reconstruct-btn" style="display: none;">
-                Reconstruct Secret
-            </button>
-            <button class="btn btn-secondary" id="clear-btn">
-                Reset
-            </button>
-        </section>
-
-        <!-- Animation Canvas -->
-        <section class="canvas-section">
-            <div class="status-bar" id="status-bar">
-                <span id="status-text">Ready to split secret...</span>
-            </div>
-            <canvas id="animation-canvas"></canvas>
-            <div class="canvas-info" id="canvas-info">
-                Click on share balls to select/deselect them for reconstruction
-            </div>
-        </section>
-
-        <!-- Share Selection Panel -->
-        <section class="share-panel" id="share-panel" style="display: none;">
-            <h3>Generated Shares</h3>
-            <div id="share-list"></div>
-            <div class="selection-info" id="selection-info">
-                Need at least <span id="required-shares">3</span> shares for secure reconstruction<br>
-                <small>Using more shares is perfectly valid and secure. Using fewer will fail.</small>
-            </div>
-        </section>
-
-        <!-- Result Display -->
-        <section class="result-section" id="result-section" style="display: none;">
-            <div class="result-box">
-                <h3>Reconstruction Result</h3>
-                <div class="result-grid">
-                    <div class="result-item">
-                        <div class="result-label">Original Secret</div>
-                        <div class="result-value" id="original-value">12345</div>
+        <!-- Main Workbench 3-Column Grid -->
+        <div class="workbench-body">
+            <!-- Left Rail: Parameter Inputs & Operation Triggers -->
+            <aside class="panel-rail panel-controls">
+                <div class="panel-section">
+                    <div class="section-title">THRESHOLD PARAMETERS</div>
+                    <div class="form-row">
+                        <label for="input-k">Challenges (k)</label>
+                        <input type="number" id="input-k" value="6" min="3" max="12" class="num-input">
                     </div>
-                    <div class="result-arrow">→</div>
-                    <div class="result-item">
-                        <div class="result-label">Reconstructed</div>
-                        <div class="result-value" id="reconstructed-value">12345</div>
+                    <div class="form-row">
+                        <label for="input-t">Threshold (t)</label>
+                        <input type="number" id="input-t" value="3" min="2" max="11" class="num-input">
                     </div>
-                    <div class="result-status" id="result-status">
-                        <span class="status-icon">✅</span>
-                        <span class="status-text">Success!</span>
+                    <div class="form-row range-row">
+                        <div class="range-labels">
+                            <label for="slider-sec">Security Ratio</label>
+                            <span class="val-mono" id="sec-pct-display">50%</span>
+                        </div>
+                        <input type="range" id="slider-sec" min="20" max="100" value="50" step="5">
                     </div>
                 </div>
+
+                <div class="panel-section">
+                    <div class="section-title">HARDWARE PUF NOISE MODEL</div>
+                    <div class="form-row">
+                        <label for="select-preset">Profile</label>
+                        <select id="select-preset" class="form-select">
+                            <option value="ideal">Nominal (0% BER)</option>
+                            <option value="normal" selected>Operational (~2% BER)</option>
+                            <option value="hot">Thermal Degraded (~5% BER)</option>
+                            <option value="aged">Aged Silicon (~10% BER)</option>
+                        </select>
+                    </div>
+                    <div class="form-row range-row">
+                        <div class="range-labels">
+                            <label for="slider-noise">Bit Error Rate</label>
+                            <span class="val-mono" id="noise-pct-display">2.0%</span>
+                        </div>
+                        <input type="range" id="slider-noise" min="0" max="15" value="2" step="0.5">
+                    </div>
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="check-majority-voting" checked>
+                        <label for="check-majority-voting">7-Sample Temporal Majority Voting</label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">FLEET OPERATIONS</div>
+                    <div class="action-stack">
+                        <button class="btn btn-default" id="btn-auth-all">AUTHENTICATE SWARM</button>
+                        <button class="btn btn-primary" id="btn-add-drone">ENROLL APPLICANT NODE</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">ADVERSARIAL INJECTION VECTORS</div>
+                    <div class="action-grid">
+                        <button class="btn btn-danger-subtle" id="btn-attack-clone">CLONED PUF</button>
+                        <button class="btn btn-danger-subtle" id="btn-attack-replay">REPLAY NONCE</button>
+                        <button class="btn btn-danger-subtle" id="btn-attack-mitm">TAMPER MAC</button>
+                        <button class="btn btn-danger-subtle" id="btn-attack-noise">EXCESS NOISE</button>
+                    </div>
+                    <button class="btn btn-danger-outline" id="btn-attack-vss">POISONED SHARE (VSS CHECK)</button>
+                </div>
+            </aside>
+
+            <!-- Center Stage: 3D Tactical Field Viewport & PUF Response Register -->
+            <main class="panel-center">
+                <div class="viewport-box">
+                    <div class="viewport-header">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <span class="subpanel-title">TACTICAL FIELD VIEWPORT (3D)</span>
+                            <div class="sim-controls">
+                                <button class="btn btn-tiny btn-default" id="btn-toggle-sim" title="Play or Pause simulation">PAUSE</button>
+                                <select id="select-sim-speed" class="control-select sim-speed-select" title="Simulation Speed">
+                                    <option value="0.5">0.5x</option>
+                                    <option value="1.0" selected>1.0x</option>
+                                    <option value="2.0">2.0x</option>
+                                </select>
+                                <select id="select-cam-mode" class="control-select cam-select" title="Camera Preset">
+                                    <option value="orbit" selected>CAM: ORBIT</option>
+                                    <option value="topdown">CAM: TOP-DOWN</option>
+                                    <option value="follow">CAM: FOLLOW UAV</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="status-legend">
+                            <span class="legend-entry"><span class="legend-swatch swatch-green"></span>AUTHENTICATED</span>
+                            <span class="legend-entry"><span class="legend-swatch swatch-amber"></span>EVALUATING</span>
+                            <span class="legend-entry"><span class="legend-swatch swatch-red"></span>QUARANTINED</span>
+                            <span class="legend-entry"><span class="legend-swatch swatch-blue"></span>STATION</span>
+                        </div>
+                    </div>
+                    <div class="canvas-mount" id="three-container">
+                        <div class="hud-overlay" id="hud-overlay">
+                            <span class="hud-field">CAM: ORBIT DRAG / ZOOM</span>
+                            <span class="hud-field" id="hud-live-action">SUBSYSTEM READY</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Cryptographic Handshake Pipeline Stepper -->
+                <div class="stepper-box">
+                    <div class="stepper-header">
+                        <span class="stepper-title">LIVE CRYPTOGRAPHIC PIPELINE STEPPER</span>
+                        <span class="stepper-state" id="stepper-state-text">IDLE / READY</span>
+                    </div>
+                    <div class="stepper-track">
+                        <div class="step-pill active" id="step-pill-1">
+                            <span class="step-idx">01</span>
+                            <span class="step-lbl">M1: CHALLENGE</span>
+                        </div>
+                        <div class="step-line" id="step-line-1"></div>
+                        <div class="step-pill" id="step-pill-2">
+                            <span class="step-idx">02</span>
+                            <span class="step-lbl">M2: SRAM PUF</span>
+                        </div>
+                        <div class="step-line" id="step-line-2"></div>
+                        <div class="step-pill" id="step-pill-3">
+                            <span class="step-idx">03</span>
+                            <span class="step-lbl">VSS CHECK</span>
+                        </div>
+                        <div class="step-line" id="step-line-3"></div>
+                        <div class="step-pill" id="step-pill-4">
+                            <span class="step-idx">04</span>
+                            <span class="step-lbl">M3: TOKEN AGG</span>
+                        </div>
+                        <div class="step-line" id="step-line-4"></div>
+                        <div class="step-pill" id="step-pill-5">
+                            <span class="step-idx">05</span>
+                            <span class="step-lbl">M4: KEY AGREED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Per-Drone Response Point Register -->
+                <div class="register-box">
+                    <div class="register-header">
+                        <div>
+                            <span class="register-title" id="selected-uav-label">UAV 101 RESPONSE REGISTER</span>
+                            <span class="register-subtitle" id="selected-uav-puf-info">(SRAM PUF 320-bit, t=3, k=6)</span>
+                        </div>
+                        <span class="register-meta">FIELD F_p (p = 2^127 - 1)</span>
+                    </div>
+                    <div class="point-chips-strip" id="point-chips-container">
+                        <!-- Populated dynamically via script -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Rail: Fleet Table & Event Log Terminal -->
+            <aside class="panel-rail panel-telemetry">
+                <!-- Fleet Registry Table -->
+                <div class="panel-section fleet-section">
+                    <div class="section-title">ACTIVE NODE REGISTRY</div>
+                    <div class="table-container">
+                        <table class="data-table fleet-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>COORD (X)</th>
+                                    <th>STATE</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fleet-table-body">
+                                <tr>
+                                    <td class="mono">101</td>
+                                    <td class="mono">0x09F2...</td>
+                                    <td>QUORUM_PEER</td>
+                                    <td><span class="badge badge-pass">VALID</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cryptographic Event Stream -->
+                <div class="panel-section terminal-section">
+                    <div class="terminal-toolbar">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="terminal-dots">
+                                <span class="terminal-dot dot-red"></span>
+                                <span class="terminal-dot dot-yellow"></span>
+                                <span class="terminal-dot dot-green"></span>
+                            </div>
+                            <span class="section-title" style="margin-bottom: 0;">EVENT AUDIT STREAM</span>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-tiny btn-default" id="btn-open-dissector" title="Reverse-engineer & inspect binary packet frames">DISSECTOR</button>
+                            <button class="btn btn-tiny" id="btn-clear-terminal">CLEAR</button>
+                            <button class="btn btn-tiny" id="btn-copy-log">COPY</button>
+                        </div>
+                    </div>
+                    <div class="terminal-view" id="terminal-body">
+                        <div class="log-row log-sys">[00:00:00.000] [SYSTEM] Protocol subsystem initialized.</div>
+                        <div class="log-row log-info">[00:00:00.001] [SETUP] Prime field order p = 2^127 - 1 (12th Mersenne prime).</div>
+                        <div class="log-row log-info">[00:00:00.002] [SETUP] Root of trust: Physical SRAM PUF with 320-bit response vectors.</div>
+                        <div class="log-row log-ok">[00:00:00.003] [READY] Quorum consensus &amp; verifiable secret sharing active.</div>
+                    </div>
+                    <div class="key-status-strip">
+                        <span class="key-lbl">SESSION KEY:</span>
+                        <span class="key-hex" id="current-session-key">WAITING FOR HANDSHAKE...</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Collapsible Bottom Panel: Specifications & Benchmarks -->
+        <section class="benchmark-panel">
+            <div class="benchmark-header">
+                <span class="subpanel-title">SPECIFICATION COMPLIANCE &amp; BENCHMARK SUITE</span>
+                <div class="btn-group">
+                    <button class="btn btn-tiny btn-default" id="btn-run-benchmarks">RUN BENCHMARKS</button>
+                    <button class="btn btn-tiny" id="btn-export-json">EXPORT JSON</button>
+                    <button class="btn btn-tiny" id="btn-export-csv">EXPORT CSV</button>
+                </div>
+            </div>
+
+            <div class="benchmark-body">
+                <div class="chart-tile">
+                    <span class="chart-caption">EXECUTION TIME VS THRESHOLD (k=8)</span>
+                    <canvas id="chart-security-level"></canvas>
+                </div>
+                <div class="chart-tile">
+                    <span class="chart-caption">PRIMITIVE BREAKDOWN (MICROSECONDS)</span>
+                    <canvas id="chart-primitive-breakdown"></canvas>
+                </div>
+                <div class="chart-tile">
+                    <span class="chart-caption">FAULT TOLERANCE VS BIT ERROR RATE</span>
+                    <canvas id="chart-noise-curve"></canvas>
+                </div>
+                <div class="chart-tile table-tile">
+                    <span class="chart-caption">COMMUNICATION &amp; STORAGE SPECIFICATION</span>
+                    <div class="table-container">
+                        <table class="data-table spec-table">
+                            <thead>
+                                <tr>
+                                    <th>METRIC</th>
+                                    <th>TARGET REF</th>
+                                    <th>MEASURED</th>
+                                    <th>VALIDATION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Communication Cost</td>
+                                    <td class="mono">1,600 bits (k=5)</td>
+                                    <td class="mono" id="table-comm-cost">1,792 bits (k=5)</td>
+                                    <td>Measured Frame</td>
+                                </tr>
+                                <tr>
+                                    <td>Storage Cost (UAV)</td>
+                                    <td class="mono">352 bits</td>
+                                    <td class="mono" id="table-storage-cost">352 bits</td>
+                                    <td>OTP ID + Seed</td>
+                                </tr>
+                                <tr>
+                                    <td>Embedded Device (Micro)</td>
+                                    <td class="mono">450 &mu;s</td>
+                                    <td class="mono" id="table-nodemcu-time">450 &mu;s</td>
+                                    <td>Low Power Ref</td>
+                                </tr>
+                                <tr>
+                                    <td>SBC Host (Embedded)</td>
+                                    <td class="mono">207 &mu;s</td>
+                                    <td class="mono" id="table-rpi-time">207 &mu;s</td>
+                                    <td>SBC Target Ref</td>
+                                </tr>
+                                <tr>
+                                    <td>Workstation (Web Crypto)</td>
+                                    <td class="mono">N/A</td>
+                                    <td class="mono" id="table-measured-time">~0.78 ms</td>
+                                    <td>Measured Engine</td>
+                                </tr>
+                                <tr>
+                                    <td>False Acceptance (FAR)</td>
+                                    <td class="mono">0.0%</td>
+                                    <td class="mono" id="table-far-rate">0.0000%</td>
+                                    <td>Verified Robust</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
-
-        
     </div>
 
-    <script src="script.js"></script>
+    <!-- Reverse-Engineering Packet Dissector & Protocol Bitstream Analyzer Modal -->
+    <dialog id="packet-inspector-dialog" class="aerospace-dialog">
+        <div class="dialog-header">
+            <div class="dialog-title">
+                <span class="radar-beacon" style="vertical-align: middle; margin-right: 6px;">
+                    <span class="radar-dot"></span>
+                </span>
+                PACKET DISSECTOR &amp; PROTOCOL BITSTREAM ANALYZER
+            </div>
+            <button class="btn btn-tiny btn-default" id="btn-close-dialog">CLOSE [ESC]</button>
+        </div>
+        <div class="dialog-body">
+            <div class="dissector-toolbar">
+                <label for="select-dissector-frame">Transmission Frame Target:</label>
+                <select id="select-dissector-frame" class="form-select" style="width: auto; min-width: 320px;">
+                    <option value="m1">M1: Admission Challenge Request (UAV -> Quorum)</option>
+                    <option value="m2" selected>M2: Quorum Challenges &amp; Feldman VSS Commitments (Peers -> UAV)</option>
+                    <option value="m3">M3: Non-Reconstructive Partial Tokens (Peers -> Coordinator)</option>
+                    <option value="m4">M4: Mutual Key Agreement Confirmation &amp; Ratchet Hash (Coordinator -> UAV)</option>
+                </select>
+            </div>
+            <div class="dissector-grid">
+                <div class="dissector-pane">
+                    <div class="pane-title">BYTE-LEVEL PROTOCOL SPECIFICATION</div>
+                    <div id="dissector-fields" class="field-tree"></div>
+                </div>
+                <div class="dissector-pane">
+                    <div class="pane-title">HEX STREAM &amp; DECRYPTED BITSTREAM DISASSEMBLY</div>
+                    <pre id="dissector-hex-dump" class="hex-dump-view"></pre>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
